@@ -199,28 +199,32 @@ const LifestylePage: React.FC = () => {
   };
 
   const handleGenerateTasks = async (date: string) => {
-    // Special case for Wednesday, October 22, 2025
-    if (date === '2025-10-22') {
-        const specialTasks: DailyTask[] = [
-            { id: Date.now(), text: "Submit a photo of the hackathon you attended with your team.", completed: false, type: 'activity_image' },
-            { id: Date.now() + 1, text: "Take a walk and send a picture of your surroundings.", completed: false, type: 'activity_image' },
-            { id: Date.now() + 2, text: "You need good sleep today for everything you accomplished. Upload a picture of your bed before you sleep.", completed: false, type: 'activity_image' },
-        ];
-        
-        setWeeklyData(prev => {
-            const newWeeklyData = { ...prev };
-            const dayData = { ...newWeeklyData[date] };
-            dayData.tasks = specialTasks; // Replace any existing tasks with these special ones
-            newWeeklyData[date] = dayData;
-            return newWeeklyData;
-        });
-        return; // Exit function after setting special tasks
-    }
-    
-    // Default behavior for all other days
     setIsGeneratingTasks(true);
     setTasksError(null);
+    
+    // Add 1 second delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     try {
+      // Special case for Wednesday, October 22, 2025
+      if (date === '2025-10-22') {
+          const specialTasks: DailyTask[] = [
+              { id: Date.now(), text: "Submit a photo of the hackathon you attended with your team. You don't want all your efforts to go to waste!", completed: false, type: 'activity_image' },
+              { id: Date.now() + 1, text: "Take a walk and send a picture of your surroundings. You need to clear up your mind after the coding marathon.", completed: false, type: 'activity_image' },
+              { id: Date.now() + 2, text: "You need good sleep today for everything you accomplished. Upload a picture of your bed before you sleep.", completed: false, type: 'activity_image' },
+          ];
+          
+          setWeeklyData(prev => {
+              const newWeeklyData = { ...prev };
+              const dayData = { ...newWeeklyData[date] };
+              dayData.tasks = specialTasks; // Replace any existing tasks with these special ones
+              newWeeklyData[date] = dayData;
+              return newWeeklyData;
+          });
+          return; // Exit function after setting special tasks
+      }
+      
+      // Default behavior for all other days
       const existingTaskTexts = weeklyData[date].tasks.map(t => t.text);
       const newGeneratedTasks = await generateLifestyleTasks(existingTaskTexts);
 
