@@ -306,18 +306,27 @@ const LifestylePage: React.FC = () => {
                                 </div>
                              )}
 
-                            {/* Generate Tasks Button */}
-                            <div className="pt-4 border-t border-gray-700">
-                                <button 
-                                  onClick={() => handleGenerateTasks(date)} 
-                                  disabled={isGeneratingTasks}
-                                  className="w-full bg-gray-700 hover:bg-gray-600 text-indigo-300 font-bold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition-colors disabled:opacity-50"
-                                >
-                                  {isGeneratingTasks ? <Spinner /> : <Wand2 size={20} />}
-                                  <span>{isGeneratingTasks ? "Generating..." : "Generate 3 Wellness Tasks"}</span>
-                                </button>
-                                {tasksError && <p className="text-red-400 text-sm mt-2 text-center">{tasksError}</p>}
-                            </div>
+                            {/* Generate Tasks Button - Only show for current/future days */}
+                            {(() => {
+                                const isPastDay = date === '2025-10-20' || date === '2025-10-21'; // Monday and Tuesday
+                                
+                                if (!isPastDay) {
+                                    return (
+                                        <div className="pt-4 border-t border-gray-700">
+                                            <button 
+                                              onClick={() => handleGenerateTasks(date)} 
+                                              disabled={isGeneratingTasks}
+                                              className="w-full bg-gray-700 hover:bg-gray-600 text-indigo-300 font-bold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition-colors disabled:opacity-50"
+                                            >
+                                              {isGeneratingTasks ? <Spinner /> : <Wand2 size={20} />}
+                                              <span>{isGeneratingTasks ? "Generating..." : "Generate 3 Wellness Tasks"}</span>
+                                            </button>
+                                            {tasksError && <p className="text-red-400 text-sm mt-2 text-center">{tasksError}</p>}
+                                        </div>
+                                    );
+                                }
+                                return null; // Don't show anything for past days
+                            })()}
                         </div>
                     </Accordion>
                 </Card>

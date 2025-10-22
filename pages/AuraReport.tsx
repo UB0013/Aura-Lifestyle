@@ -32,24 +32,36 @@ const AuraReportPage: React.FC = () => {
     useEffect(() => {
         const calculateStats = () => {
             setIsCalculating(true);
-            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             
             const processedWeeklyData: DailyStats[] = Object.entries(weeklyData).map(([dateString, dayData]) => {
                 const tasksCompleted = dayData.tasks.filter(t => t.completed).length;
                 const tasksTotal = dayData.tasks.length;
                 const { stats } = dayData;
 
-                const stepsScore = Math.min(stats.steps / targets.steps, 1) * 100;
-                const caloriesScore = Math.min(stats.calories / targets.calories, 1) * 100;
-                const sleepScoreValue = Math.min(stats.sleepDuration / targets.sleepDuration, 1) * 100;
-                const taskScore = tasksTotal > 0 ? (tasksCompleted / tasksTotal) * 100 : 100;
+                // Check if day has any meaningful data (stats > 0 or tasks exist)
+                const hasData = stats.steps > 0 || stats.calories > 0 || stats.sleepDuration > 0 || tasksTotal > 0;
+                
+                let dailyAuraScore = 0;
+                if (hasData) {
+                    const stepsScore = Math.min(stats.steps / targets.steps, 1) * 100;
+                    const caloriesScore = Math.min(stats.calories / targets.calories, 1) * 100;
+                    const sleepScoreValue = Math.min(stats.sleepDuration / targets.sleepDuration, 1) * 100;
+                    const taskScore = tasksTotal > 0 ? (tasksCompleted / tasksTotal) * 100 : 0;
 
-                const dailyAuraScore = Math.round(
-                    (stepsScore * 0.30) + (caloriesScore * 0.25) + (sleepScoreValue * 0.25) + (taskScore * 0.20)
-                );
+                    dailyAuraScore = Math.round(
+                        (stepsScore * 0.30) + (caloriesScore * 0.25) + (sleepScoreValue * 0.25) + (taskScore * 0.20)
+                    );
+                }
+                
+                // Format date as "Mon 20" or "Tue 21" etc.
+                const date = new Date(dateString);
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const dayName = dayNames[date.getUTCDay()];
+                const dayNumber = date.getUTCDate();
+                const formattedDay = `${dayName} ${dayNumber}`;
                 
                 return {
-                    day: dayNames[new Date(dateString).getUTCDay()],
+                    day: formattedDay,
                     steps: stats.steps,
                     calories: stats.calories,
                     sleepDuration: stats.sleepDuration,
