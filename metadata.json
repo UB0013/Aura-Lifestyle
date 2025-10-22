@@ -1,0 +1,8 @@
+{
+  "name": "Aura - Your University Wellness Companion",
+  "description": "A mental health application for university students featuring an AI video chatbot, a lifestyle wellness dashboard, and personalized avatar creation to provide support and resources.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
