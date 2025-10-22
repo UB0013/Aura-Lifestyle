@@ -26,9 +26,30 @@ const initializeWeekData = (): Record<string, DayData> => {
         const currentDate = new Date(startDate);
         currentDate.setDate(startDate.getDate() + i);
         const dateString = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
+        
+        // Add sample data for Monday and Tuesday
+        let sampleStats = { steps: 0, calories: 0, sleepDuration: 0 };
+        let sampleTasks: any[] = [];
+        
+        if (i === 0) { // Monday
+            sampleStats = { steps: 6500, calories: 280, sleepDuration: 7.2 };
+            sampleTasks = [
+                { id: 1001, text: "Take a 15-minute walk around campus and capture a photo of something that makes you smile.", completed: true, type: 'activity_image', feedback: "What a lovely photo! I can see you found something beautiful during your walk. Taking time to notice the positive things around us is such a wonderful practice for mental wellness.", userInput: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ..." },
+                { id: 1002, text: "Write down three things you're grateful for today and why they matter to you.", completed: true, type: 'writing', feedback: "Thank you for sharing such heartfelt gratitude! It's beautiful to see how you appreciate both the big and small things in your life. Practicing gratitude like this can really boost your mood and perspective.", userInput: "1. My morning coffee - it gives me energy and comfort to start the day right. 2. My study group - they help me understand difficult concepts and make learning fun. 3. Video call with my family - even though we're far apart, technology lets us stay connected." },
+                { id: 1003, text: "Prepare a healthy snack and share a photo of your colorful creation.", completed: false, type: 'food_image' }
+            ];
+        } else if (i === 1) { // Tuesday
+            sampleStats = { steps: 9200, calories: 420, sleepDuration: 8.5 };
+            sampleTasks = [
+                { id: 2001, text: "Do 10 minutes of stretching or yoga and take a photo of your setup.", completed: true, type: 'activity_image', feedback: "Excellent work on prioritizing your physical wellness! I can see you created a peaceful space for your stretching routine. Regular movement like this is so important for both your body and mind.", userInput: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ..." },
+                { id: 2002, text: "Reflect on one challenge you faced today and how you overcame it.", completed: false, type: 'writing' },
+                { id: 2003, text: "Take a photo of a nutritious meal you enjoyed today.", completed: true, type: 'food_image', feedback: "That looks absolutely delicious and nutritious! I love seeing how you're nourishing your body with such colorful, healthy foods. Good nutrition is such an important foundation for feeling your best.", userInput: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ..." }
+            ];
+        }
+        
         week[dateString] = {
-            tasks: [],
-            stats: { steps: 0, calories: 0, sleepDuration: 0 }
+            tasks: sampleTasks,
+            stats: sampleStats
         };
     }
     return week;

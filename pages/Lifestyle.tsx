@@ -199,28 +199,32 @@ const LifestylePage: React.FC = () => {
   };
 
   const handleGenerateTasks = async (date: string) => {
-    // Special case for Wednesday, October 22, 2025
-    if (date === '2025-10-22') {
-        const specialTasks: DailyTask[] = [
-            { id: Date.now(), text: "Submit a photo of the hackathon you attended with your team.", completed: false, type: 'activity_image' },
-            { id: Date.now() + 1, text: "Take a walk and send a picture of your surroundings.", completed: false, type: 'activity_image' },
-            { id: Date.now() + 2, text: "You need good sleep today for everything you accomplished. Upload a picture of your bed before you sleep.", completed: false, type: 'activity_image' },
-        ];
-        
-        setWeeklyData(prev => {
-            const newWeeklyData = { ...prev };
-            const dayData = { ...newWeeklyData[date] };
-            dayData.tasks = specialTasks; // Replace any existing tasks with these special ones
-            newWeeklyData[date] = dayData;
-            return newWeeklyData;
-        });
-        return; // Exit function after setting special tasks
-    }
-    
-    // Default behavior for all other days
     setIsGeneratingTasks(true);
     setTasksError(null);
+    
+    // Add 1 second delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     try {
+      // Special case for Wednesday, October 22, 2025
+      if (date === '2025-10-22') {
+          const specialTasks: DailyTask[] = [
+              { id: Date.now(), text: "Submit a photo of the hackathon you attended with your team. You don't want all your efforts to go to waste!", completed: false, type: 'activity_image' },
+              { id: Date.now() + 1, text: "Take a walk and send a picture of your surroundings. You need to clear up your mind after the coding marathon.", completed: false, type: 'activity_image' },
+              { id: Date.now() + 2, text: "You need good sleep today for everything you accomplished. Upload a picture of your bed before you sleep.", completed: false, type: 'activity_image' },
+          ];
+          
+          setWeeklyData(prev => {
+              const newWeeklyData = { ...prev };
+              const dayData = { ...newWeeklyData[date] };
+              dayData.tasks = specialTasks; // Replace any existing tasks with these special ones
+              newWeeklyData[date] = dayData;
+              return newWeeklyData;
+          });
+          return; // Exit function after setting special tasks
+      }
+      
+      // Default behavior for all other days
       const existingTaskTexts = weeklyData[date].tasks.map(t => t.text);
       const newGeneratedTasks = await generateLifestyleTasks(existingTaskTexts);
 
@@ -306,18 +310,27 @@ const LifestylePage: React.FC = () => {
                                 </div>
                              )}
 
-                            {/* Generate Tasks Button */}
-                            <div className="pt-4 border-t border-gray-700">
-                                <button 
-                                  onClick={() => handleGenerateTasks(date)} 
-                                  disabled={isGeneratingTasks}
-                                  className="w-full bg-gray-700 hover:bg-gray-600 text-indigo-300 font-bold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition-colors disabled:opacity-50"
-                                >
-                                  {isGeneratingTasks ? <Spinner /> : <Wand2 size={20} />}
-                                  <span>{isGeneratingTasks ? "Generating..." : "Generate 3 Wellness Tasks"}</span>
-                                </button>
-                                {tasksError && <p className="text-red-400 text-sm mt-2 text-center">{tasksError}</p>}
-                            </div>
+                            {/* Generate Tasks Button - Only show for current/future days */}
+                            {(() => {
+                                const isPastDay = date === '2025-10-20' || date === '2025-10-21'; // Monday and Tuesday
+                                
+                                if (!isPastDay) {
+                                    return (
+                                        <div className="pt-4 border-t border-gray-700">
+                                            <button 
+                                              onClick={() => handleGenerateTasks(date)} 
+                                              disabled={isGeneratingTasks}
+                                              className="w-full bg-gray-700 hover:bg-gray-600 text-indigo-300 font-bold py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition-colors disabled:opacity-50"
+                                            >
+                                              {isGeneratingTasks ? <Spinner /> : <Wand2 size={20} />}
+                                              <span>{isGeneratingTasks ? "Generating..." : "Generate 3 Wellness Tasks"}</span>
+                                            </button>
+                                            {tasksError && <p className="text-red-400 text-sm mt-2 text-center">{tasksError}</p>}
+                                        </div>
+                                    );
+                                }
+                                return null; // Don't show anything for past days
+                            })()}
                         </div>
                     </Accordion>
                 </Card>
